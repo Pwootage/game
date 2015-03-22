@@ -3,6 +3,18 @@
 This is a neat game-thingy. At some point I'll have to update this file with more details,
 when there are more details :)
 
+# Building
+
+I'll set up proper sbt building at some point, I promise!
+
+* Download lwjgl from [http://build.lwjgl.org/stable/lwjgl.zip](http://build.lwjgl.org/stable/lwjgl.zip)
+* Extract into a folder named "lwjl" in lib (i.e. lib/lwjgl/{jar/native/doc})
+* Open as SBT project in intellij, open GameMain.scala, run it, add appropriate "-Djava.library.path" to launchconfig
+
+### Example library paths:
+* -Djava.library.path=lib/lwjgl/native/windows/x64
+* -Djava.library.path=lib/lwjgl/native/macosx/x64
+* -Djava.library.path=lib/lwjgl/native/linux/x64
 
 # License
 Copyright (C) 2015 Christopher Freestone
