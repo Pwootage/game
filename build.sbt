@@ -13,3 +13,4 @@ unmanagedJars in Compile := (
     })
   ).classpath
 
+unmanagedResourceDirectories in Compile += baseDirectory.value / "res"
