@@ -1,11 +1,21 @@
 #version 330 core
 
-layout(location = 0) in vec2 pos;
-layout(location = 1) in vec2 uv_start;
-layout(location = 2) in vec4 uv_end;
+uniform float aspectX;
+uniform float aspectY;
 
+in vec2 in1;
+in vec2 in2;
+in vec2 in3;
+in vec2 in4;
+
+out vec2 xy_start;
+out vec2 xy_end;
+out vec2 uv_start;
+out vec2 uv_end;
 
 void main() {
-  gl_Position.xy = pos;
-  gl_Position.zw = vec2(1.0, 1.0);
+  xy_start = vec2(in1.x / aspectX, in1.y / aspectY);
+  xy_end = vec2(in2.x / aspectX, in2.y / aspectY);
+  uv_start = in3;
+  uv_end = in4;
 }

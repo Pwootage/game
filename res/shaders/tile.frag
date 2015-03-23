@@ -1,16 +1,15 @@
 #version 330 core
 
-// Inputs
-//in vec2 inTex;
-//in vec4 inColor;
+//Inputs
+in vec2 uv;
 
 //Textures
-uniform sampler2D tex1;
+uniform sampler2D tex;
 
 // Outputs
 out vec3 outColor;
 
 void main() {
-  outColor = vec3(1.0f,1.0f,1.0f);
+  outColor = texture(tex, uv).rgb;
   // outColor = inColor.rgb * texture(tex1, inTex).rgb;
 }

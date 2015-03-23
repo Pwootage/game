@@ -24,14 +24,13 @@ import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.opengl.GL30._
 
-//See GLVertexArrayObject for format
 class GLBuffer {
   val id = glGenBuffers()
   var size = 0
 
   def bufferVertexData(data: FloatBuffer): Unit = {
     this.size = data.limit / 8
-//    glBindBuffer(GL_ARRAY_BUFFER, id)
+    glBindBuffer(GL_ARRAY_BUFFER, id)
     glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW)
   }
 

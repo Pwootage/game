@@ -72,4 +72,6 @@ class GLShader(vertPath: String, fragPath: String, geoPath: Option[String] = Non
 
     pid
   }
+
+  def getLoc(name:String) = glGetUniformLocation(progID, name)
 }

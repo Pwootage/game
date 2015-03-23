@@ -32,6 +32,18 @@ class Game {
   private var running = true
   val errCB = Callbacks.errorCallbackPrint(System.err)
   val ih = new InputHandler
+  val resizeCB = new GLFWWindowSizeCallback {
+    override def invoke(window: Long, width: Int, height: Int): Unit = {
+      Game.this.width = width
+      Game.this.height = height
+      Game.this.aspect = width.toFloat / height.toFloat
+      glViewport(0, 0, width, height)
+    }
+  }
+
+  var width = 600
+  var height = 400
+  var aspect = width.toFloat / height.toFloat
 
   glfwSetErrorCallback(errCB)
   if (glfwInit() != GL_TRUE) throw new Error("Failed to initialize GLFW")
@@ -39,7 +51,7 @@ class Game {
   //  glfwWindowHint(GLFW_VISIBLE, GL_FALSE)
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE)
 
-  val window = glfwCreateWindow(800, 600, "Game", NULL, NULL)
+  val window = glfwCreateWindow(width, height, "Game", NULL, NULL)
   if (window == NULL) throw new Error("Failed to create window")
 
   glfwSetKeyCallback(window, ih.glfwEventHandler)
@@ -49,6 +61,9 @@ class Game {
   //Vsync?
   //  glfwSwapInterval(1)
 
+  glfwSetWindowSizeCallback(window, resizeCB)
+
+  var drawBuff: GLBuffer = _
 
   def run(): Unit = {
     GLContext.createFromCurrent()
@@ -61,29 +76,38 @@ class Game {
     val shader = new GLShader("shaders/tile.vert", "shaders/tile.frag", Some("shaders/tile.geom"))
     glUseProgram(shader.progID)
 
-    val drawBuff = new GLBuffer
-    //Just a point in the middle of the screen, for now
     val toDraw = BufferUtils.createFloatBuffer(16)
     toDraw.put(Array(
       0.5f, 0.5f,
       1.0f, 1.0f,
       0.0f, 0.0f,
-      1.0f / 16.0f, 1.0f / 16.0f
+      1.0f, 1.0f
     ))
     toDraw.put(Array(
       0.0f, 0.0f,
       0.5f, 0.5f,
-      0.0f, 0.0f,
-      1.0f / 16.0f, 1.0f / 16.0f
+      1.0f / 16.0f, 1.0f / 16.0f,
+      2.0f / 16.0f, 2.0f / 16.0f
     ))
     toDraw.flip()
+    drawBuff = new GLBuffer
     drawBuff.bufferVertexData(toDraw)
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
     while (running) {
-      glClear(GL_COLOR_BUFFER_BIT)
+      //Clear is slow, so we're going to avoid it!
+      //glClear(GL_COLOR_BUFFER_BIT)
 
-      drawBuff.draw()
+      //Set uniforms for vert shader
+      if (aspect < 1) {
+        glUniform1f(shader.getLoc("aspectX"), 1)
+        glUniform1f(shader.getLoc("aspectY"), 1 / aspect)
+      } else {
+        glUniform1f(shader.getLoc("aspectX"), aspect)
+        glUniform1f(shader.getLoc("aspectY"), 1)
+      }
+
+      main()
 
       glfwSwapBuffers(window)
       glfwPollEvents()
@@ -95,8 +119,13 @@ class Game {
     closeHandler()
   }
 
+  def main(): Unit = {
+    drawBuff.draw()
+  }
+
   def closeHandler(): Unit = {
     glfwDestroyWindow(window)
     ih.glfwEventHandler.release()
+    resizeCB.release()
   }
 }
